@@ -206,6 +206,31 @@ void trendAnalysisBFS() {
     int maxTrend = 1;
     int endDay = 0;
 
+    while (!q.empty()) {
+        auto current = q.front();
+        q.pop();
+        
+        if (current.second > maxTrend) {
+            maxTrend = current.second;
+            endDay = current.first;
+        }
+
+        for (int neighbor : graph[current.first]) {
+            if (prices[neighbor] > prices[current.first]) {
+                q.push({neighbor, current.second + 1});
+            } else {
+                q.push({neighbor, 1});
+            }
+        }
+    }
+
+    cout << "Longest increasing trend: " << maxTrend << " days\n";
+    cout << "Ending on day " << endDay + 1 << " (Price: " << prices[endDay] << ")\n";
+    addToHistory("Trend Analysis: " + to_string(maxTrend) + 
+                 " day trend ending on day " + to_string(endDay+1));
+}
+
+
 
 void changeDayLimit() {
     cout << "Current day limit: " << dayLimit << "\n";
