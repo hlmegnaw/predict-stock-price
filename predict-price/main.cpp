@@ -185,6 +185,58 @@ void PriceChanges() {
                  " & " + to_string(bestPair.second) + " (Δ=" + to_string(minDist) + ")");
 }
 
+void changeDayLimit() {
+    cout << "Current day limit: " << dayLimit << "\n";
+    cout << "Enter new day limit (2-30): ";
+    int newLimit;
+    cin >> newLimit;
+    
+    while (newLimit < 2 || newLimit > 30) {
+        cout << "Invalid range. Please enter between 2 and 30: ";
+        cin >> newLimit;
+    }
+    
+    dayLimit = newLimit;
+    cout << "Day limit set to " << dayLimit << " days\n";
+    addToHistory("Changed day limit to " + to_string(dayLimit));
+}
+
+// New function for Menu 6: Price Volatility Analysis
+void priceVolatilityAnalysis() {
+    if (prices.empty()) {
+        cout << "No data for volatility analysis.\n";
+        return;
+    }
+
+    double sum = 0.0;
+    for (int price : prices) {
+        sum += price;
+    }
+    double mean = sum / prices.size();
+
+    double variance = 0.0;
+    for (int price : prices) {
+        variance += pow(price - mean, 2);
+    }
+    variance /= prices.size();
+    double stdDev = sqrt(variance);
+
+    cout << fixed << setprecision(2);
+    cout << "Price Volatility Analysis:\n";
+    cout << "Mean price: " << mean << "\n";
+    cout << "Standard deviation: " << stdDev << "\n";
+    cout << "Volatility index: " << (stdDev / mean) * 100 << "%\n";
+    
+    if ((stdDev / mean) * 100 > 15.0) {
+        cout << "Warning: High volatility detected!\n";
+    } else {
+        cout << "Market shows stable trends\n";
+    }
+    
+    addToHistory("Volatility Analysis: SD=" + to_string(stdDev) + 
+                 ", Volatility=" + to_string((stdDev / mean) * 100) + "%");
+}
+
 
 
 
