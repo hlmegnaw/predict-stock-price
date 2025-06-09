@@ -2,7 +2,7 @@
 design and analysis algorithm group 3 mini project
 we define about algorithm,data structure and its efficiency in algorithm.md and data_structure.md
 
-Group Member
+
 
 Group Members                ID Number
 1. ADDISU ASEGID             NSR/069/15
