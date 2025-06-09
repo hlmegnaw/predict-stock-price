@@ -157,6 +157,39 @@ void PriceChanges() {
             }
         }
     }
+ for (int k = 0; k < n; ++k) {
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (dist[i][k] != INT_MAX && dist[k][j] != INT_MAX &&
+                    dist[i][k] + dist[k][j] < dist[i][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                }
+            }
+        }
+    }
+
+    int minDist = INT_MAX;
+    pair<int,int> bestPair;
+    for (int i = 0; i < n; ++i) {
+        for (int j = i+1; j < n; ++j) {
+            if (dist[i][j] < minDist) {
+                minDist = dist[i][j];
+                bestPair = {i+1, j+1};
+            }
+        }
+    }
+
+    cout << "Most correlated days: " << bestPair.first
+         << " and " << bestPair.second << " (Δ: " << minDist << ")\n";
+    addToHistory("Correlation Analysis: Days " + to_string(bestPair.first) +
+                 " & " + to_string(bestPair.second) + " (Δ=" + to_string(minDist) + ")");
+}
+
+
+
+
+
+
 
 // Main menu function
 int main() {
