@@ -190,6 +190,23 @@ void PriceChanges() {
                  " & " + to_string(bestPair.second) + " (Δ=" + to_string(minDist) + ")");
 }
 
+void trendAnalysisBFS() {
+    if (prices.size() < 3) {
+        cout << "Need at least 3 days for trend analysis.\n";
+        return;
+    }
+
+    map<int, vector<int>> graph;
+    for (int i = 0; i < prices.size() - 1; ++i) {
+        graph[i].push_back(i+1);
+    }
+
+    queue<pair<int,int>> q;
+    q.push({0, 1});
+    int maxTrend = 1;
+    int endDay = 0;
+
+
 void changeDayLimit() {
     cout << "Current day limit: " << dayLimit << "\n";
     cout << "Enter new day limit (2-30): ";
