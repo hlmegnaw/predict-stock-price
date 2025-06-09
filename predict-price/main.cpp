@@ -4,6 +4,7 @@
 #include <limits>
 
 
+
 using namespace std;
 
 vector<int> prices;
@@ -238,7 +239,91 @@ void priceVolatilityAnalysis() {
 }
 
 
+void predict_nextprice() {
+    if (prices.size() < 3) {
+        cout << "Need at least 3 days of data for prediction.\n";
+        return;
+    }
 
+    int n = prices.size();
+    vector<vector<double>> dist(n, vector<double>(n, numeric_limits<double>::max()));
+
+    // Initialize distance matrix with absolute price diffs only forward
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            dist[i][j] = abs(prices[j] - prices[i]);
+        }
+        dist[i][i] = 0;
+    }
+
+    // Floyd-Warshall
+    for (int k = 0; k < n; ++k)
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < n; ++j)
+                if (dist[i][k] != numeric_limits<double>::max() && dist[k][j] != numeric_limits<double>::max() &&
+                    dist[i][k] + dist[k][j] < dist[i][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                }
+
+    double sumChanges = 0;
+    int count = 0;
+
+    // Check for similar patterns (<5% diff)
+    for (int i = 1; i < n - 1; ++i) {
+        if (dist[i - 1][i] < (prices[i - 1] * 0.05)) {
+            sumChanges += prices[i + 1] - prices[i];
+            count++;
+        }
+    }
+
+    double avgChange;
+    if (count == 0) {
+        // No similar patterns, fallback to average daily change over the whole series
+        double totalChange = 0;
+        for (int i = 1; i < n; ++i) {
+            totalChange += prices[i] - prices[i - 1];
+        }
+        avgChange = totalChange / (n - 1);
+        cout << "No similar patterns found, using average daily change for prediction.\n";
+    } else {
+        avgChange = sumChanges / count;
+        cout << "Based on " << count << " similar historical patterns.\n";
+    }
+
+    double predictedPrice = prices.back() + avgChange;
+
+    cout << fixed << setprecision(2);
+    cout << "\nPrice Prediction using Floyd-Warshall Algorithm:\n";
+    cout << "Last price: " << prices.back() << "\n";
+    cout << "Average change used: " << avgChange << "\n";
+    cout << "Predicted next price: " << predictedPrice << "\n";
+
+    if (avgChange > 0) {
+        cout << "Recommendation: Consider buying (expected rise)\n";
+    } else if (avgChange < 0) {
+        cout << "Recommendation: Consider selling (expected drop)\n";
+    } else {
+        cout << "Recommendation: Hold (market expected to be stable)\n";
+    }
+
+    addToHistory("Floyd-Warshall Prediction: Predicted=" + to_string(predictedPrice) +
+                 ", Change=" + to_string(avgChange) + " based on " + to_string(count) + " patterns");
+}
+
+
+// New function for Menu 8: View Analysis History
+void viewAnalysisHistory() {
+    if (analysisHistory.empty()) {
+        cout << "No analysis history available.\n";
+        return;
+    }
+h
+    cout << "\n=== Analysis History ===\n";
+    for (const string& entry : analysisHistory) {
+        cout << entry << "\n";
+    }
+    cout << "=======================\n";
+}
 
 
 
