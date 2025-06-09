@@ -101,6 +101,62 @@ void calculateMaxProfit() {
     }
 }
 
+// Function for investment strategy
+void InvestmentStrategy() {
+    if (prices.size() < 3) {
+        cout << "Need at least 3 days for portfolio optimization.\n";
+        return;
+    }
+
+    vector<vector<int>> graph = {
+        {0, 1, INT_MAX},
+        {INT_MAX, 0, 1},
+        {INT_MAX, INT_MAX, 0}
+    };
+
+    for (int i = 0; i < prices.size() - 1; i++) {
+        int profit = prices[i+1] - prices[i];
+        graph[0][1] = min(graph[0][1], -profit);
+        if (i < prices.size() - 2) {
+            graph[1][2] = min(graph[1][2], -profit);
+        }
+    }
+
+    vector<int> cost(3, INT_MAX);
+    vector<int> path(3);
+    cost[0] = 0;
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (graph[i][j] != INT_MAX && cost[i] + graph[i][j] < cost[j]) {
+                cost[j] = cost[i] + graph[i][j];
+                path[j] = i;
+            }
+        }
+    }
+
+    cout << "Optimal portfolio path cost: " << -cost[2] << " (profit)\n";
+    cout << "Path: Buy -> Hold -> Sell\n";
+    addToHistory("Portfolio Optimization: Profit=" + to_string(-cost[2]));
+}
+
+// Function for price changes analysis
+void PriceChanges() {
+    if (prices.empty()) {
+        cout << "No data for correlation analysis.\n";
+        return;
+    }
+
+    int n = prices.size();
+    vector<vector<int>> dist(n, vector<int>(n, INT_MAX));
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (i == j) dist[i][j] = 0;
+            else if (abs(i-j) <= dayLimit) {
+                dist[i][j] = abs(prices[j] - prices[i]);
+            }
+        }
+    }
 
 // Main menu function
 int main() {
